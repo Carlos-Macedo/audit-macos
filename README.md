@@ -74,7 +74,14 @@ chmod +x audit_mac.command
 ```bash
 ./audit_mac.command
 ```
-### O
-```bash
-con doble click en audit_mac.command
-```
+### También puedes ejecutarlo con doble clic desde la carpeta
+
+- Abre la carpeta `audit-macos`
+- Haz doble clic en `audit_mac.command`
+
+## Archivos generados
+
+Al ejecutarse, el script genera en la misma carpeta:
+
+- `audit_<NOMBRE_EQUIPO>.json`
+- `audit_<NOMBRE_EQUIPO>.txt`
