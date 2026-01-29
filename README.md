@@ -61,4 +61,20 @@ El script realiza una auditoría **solo en el equipo local** y obtiene:
 ```bash
 git clone https://github.com/Carlos-Macedo/audit-macos.git
 cd audit-macos
+```
 
+### Dar permisos de ejecución
+
+```bash
+chmod +x audit_mac.command
+```
+
+### Ejecutar el script
+
+```bash
+./audit_mac.command
+```
+### O
+```bash
+con doble click en audit_mac.command
+```
