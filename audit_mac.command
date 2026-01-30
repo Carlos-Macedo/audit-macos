@@ -94,6 +94,37 @@ DETALLE_GENERAL=$(find "$HOME" -type f \
 DETALLE_PDF=$(find "$HOME" -type f -name "*.pdf" 2>/dev/null | head -20)
 
 # ==================================================
+# Velocidad de Internet
+# ==================================================
+TMP_FILE="/tmp/audit_speed_test_${SAFE_NAME}.bin"
+dd if=/dev/urandom of="$TMP_FILE" bs=1m count=5 2>/dev/null
+
+START_DL=$(date +%s)
+curl -L -o /dev/null https://speed.hetzner.de/100MB.bin --max-time 20 >/dev/null 2>&1
+END_DL=$(date +%s)
+
+TIME_DL=$((END_DL - START_DL))
+if [ "$TIME_DL" -gt 0 ]; then
+  SPEED_DOWNLOAD_MBPS=$(( (100 * 8) / TIME_DL ))
+else
+  SPEED_DOWNLOAD_MBPS=0
+fi
+
+START_UL=$(date +%s)
+curl -X POST --data-binary @"$TMP_FILE" https://httpbin.org/post --max-time 20 >/dev/null 2>&1
+END_UL=$(date +%s)
+
+TIME_UL=$((END_UL - START_UL))
+if [ "$TIME_UL" -gt 0 ]; then
+  SPEED_UPLOAD_MBPS=$(( (5 * 8) / TIME_UL ))
+else
+  SPEED_UPLOAD_MBPS=0
+fi
+
+PING_TIME=$(ping -c 3 8.8.8.8 | awk -F'/' 'END {print $5 " ms"}')
+rm -f "$TMP_FILE"
+
+# ==================================================
 # Generación del JSON
 # ==================================================
 cat <<EOF > "$OUTPUT"
@@ -134,6 +165,11 @@ $(echo "$USUARIOS" | sed 's/^/    "/;s/$/",/' | sed '$ s/,$//')
       "5_min": $LOAD_5,
       "15_min": $LOAD_15
     }
+  },
+  "internet": {
+    "descarga_mbps": $SPEED_DOWNLOAD_MBPS,
+    "subida_mbps": $SPEED_UPLOAD_MBPS,
+    "latencia": "$PING_TIME"
   },
 
   "certificados": {
@@ -235,6 +271,14 @@ Por tipo:
 - PEM : $COUNT_PEM
 - PDF : $COUNT_PDF
 - DMG : $COUNT_DMG
+
+----------------------------------------
+VELOCIDAD DE INTERNET
+----------------------------------------
+
+- Descarga: $SPEED_DOWNLOAD_MBPS
+- Subida: $SPEED_UPLOAD_MBPS
+- Latencia: $PING_TIME
 
 ========================================
 Fin del reporte

@@ -52,6 +52,10 @@ El script realiza una auditoría **solo en el equipo local** y obtiene:
   - `.dmg`
 - Ejemplos de rutas encontradas (limitadas)
 
+### Velocidad de Internet
+- Los valores de descarga, subida y latencia son aproximados y dependen de la red.
+- En redes corporativas algunos tests pueden estar bloqueados.
+
 ---
 
 ## Cómo usar el script
@@ -85,3 +89,13 @@ Al ejecutarse, el script genera en la misma carpeta:
 
 - `audit_<NOMBRE_EQUIPO>.json`
 - `audit_<NOMBRE_EQUIPO>.txt`
+
+### Abrir la terminal y entrar a la carpeta del proyecto
+```bash
+cd audit-macos
+```
+
+### Descargar las actualizaciones
+```bash
+git pull
+```
