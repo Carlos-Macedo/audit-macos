@@ -76,6 +76,44 @@ fi
 SCREEN_TIME_RAW=$(defaults read /Library/Preferences/com.apple.ScreenTime.plist ScreenTimeEnabled 2>/dev/null || echo 0)
 [ "$SCREEN_TIME_RAW" == "1" ] && SCREEN_TIME_ENABLED=true || SCREEN_TIME_ENABLED=false
 
+
+# ==================================================
+# Seguridad avanzada
+# ==================================================
+# Estado de FileVault (cifrado de disco)
+FILEVAULT_RAW=$(fdesetup status 2>/dev/null)
+
+if echo "$FILEVAULT_RAW" | grep -qi "On"; then
+  FILEVAULT_ENABLED=true
+else
+  FILEVAULT_ENABLED=false
+fi
+
+# SIP – System Integrity Protection
+SIP_RAW=$(csrutil status 2>/dev/null)
+
+if echo "$SIP_RAW" | grep -qi "enabled"; then
+  SIP_ENABLED=true
+else
+  SIP_ENABLED=false
+fi
+
+#Ver SSH activos (muy buena idea)
+SSH_SERVICE=$(systemsetup -getremotelogin 2>/dev/null)
+
+if echo "$SSH_SERVICE" | grep -qi "On"; then
+  SSH_ENABLED=true
+else
+  SSH_ENABLED=false
+fi
+
+SSH_SESSIONS=$(who | grep -i ssh | wc -l | tr -d ' ')
+
+
+# Uptime real (tiempo sin reinicio)
+UPTIME_HUMANO=$(uptime | sed 's/.*up \([^,]*\),.*/\1/')
+
+
 # ==================================================
 # Firewall (compatible con macOS antiguos y modernos)
 # ==================================================
@@ -242,7 +280,19 @@ $(echo "$USUARIOS" | sed 's/^/    "/;s/$/",/' | sed '$ s/,$//')
     "subida_mbps": $SPEED_UPLOAD_MBPS,
     "latencia": "$PING_TIME"
   },
-
+  "seguridad_avanzada": {
+    "filevault": {
+      "activado": $FILEVAULT_ENABLED
+    },
+    "sip": {
+      "activado": $SIP_ENABLED
+    },
+    "ssh": {
+      "servicio_activado": $SSH_ENABLED,
+      "sesiones_activas": $SSH_SESSIONS
+    },
+    "uptime": "$UPTIME_HUMANO"
+  },
   "certificados": {
     "certificados_publicos": [
 $(echo "$CERT_PUBLICOS" | sed 's/^/      "/;s/$/",/' | sed '$ s/,$//')
@@ -338,6 +388,19 @@ Carga promedio:
   - Último 1 min  : $LOAD_1
   - Últimos 5 min : $LOAD_5
   - Últimos 15 min: $LOAD_15
+
+----------------------------------------
+SEGURIDAD AVANZADA
+----------------------------------------
+FileVault (cifrado de disco) : $( [ "$FILEVAULT_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
+SIP (System Integrity Protection): $( [ "$SIP_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
+
+SSH:
+- Servicio               : $( [ "$SSH_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
+- Sesiones activas       : $SSH_SESSIONS
+
+Tiempo sin reinicio      : $UPTIME_HUMANO
+
 
 ----------------------------------------
 CERTIFICADOS

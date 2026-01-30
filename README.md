@@ -57,6 +57,59 @@ El script realiza una auditoría **solo en el equipo local** y obtiene:
 - Los valores de descarga, subida y latencia son aproximados y dependen de la red.
 - En redes corporativas algunos tests pueden estar bloqueados.
 
+### FileVault (cifrado de disco)
+- Verifica si el disco del equipo está cifrado con FileVault.
+- El cifrado protege la información en caso de pérdida o robo del equipo.
+- Se reporta únicamente el estado (activado / desactivado).
+
+### SIP – System Integrity Protection
+- Comprueba el estado de SIP, una tecnología de seguridad de macOS que protege archivos y procesos críticos del sistema.
+- SIP evita modificaciones no autorizadas incluso por usuarios con privilegios de administrador.
+- Se reporta como activado o desactivado.
+
+### SSH (acceso remoto)
+- Verifica si el servicio SSH está habilitado en el equipo.
+- Cuenta la cantidad de sesiones SSH activas al momento de la auditoría.
+- Útil para detectar accesos remotos o sesiones abiertas.
+
+### SSH (acceso remoto)
+- Verifica si el servicio SSH está habilitado en el equipo.
+- Cuenta la cantidad de sesiones SSH activas al momento de la auditoría.
+- Útil para detectar accesos remotos o sesiones abiertas.
+
+---
+
+## Limitaciones conocidas
+
+Debido a las políticas de seguridad y privacidad de macOs, existen ciertos datos que no pueden ser obtenidos automáticamente por scripts, especialmente en versiones modernas del SO y en equipos con Apple Silicon (M1, M2, M3,...)
+
+### Tiempo de uso de pantalla (Screen Time)
+- macOS restringe el acceso programático a la información detallada de Tiempo de uso.
+- No es posible obtener:
+  - Uso diario por aplicación
+  - Uso semanal
+  - Historial de actividad por horas
+- El script únicamente puede indicar si la funcionalidad está configurada o no verificable, dependiendo de la versión del sistema.
+
+### Bloqueo de pantalla
+- En equipos Apple Silicon y versiones recientes de macOS (Sonoma / Tahoe), Apple limita el acceso a ciertos parámetros del bloqueo de pantalla.
+- El script puede:
+  - Detectar configuraciones básicas
+  - Informar cuando la verificación completa no es posible automáticamente
+- En equipos Intel y versiones anteriores, la detección suele ser más precisa.
+
+### Firewall y configuraciones del sistema
+- Algunas preferencias ya no se almacenan en archivos .plist accesibles directamente.
+- El script utiliza métodos alternativos y compatibles según la versión de macOS, pero en algunos casos solo puede reportar el estado general (activado / desactivado).
+
+### Permisos del sistema
+- El script no solicita permisos elevados ni desactiva protecciones del sistema.
+- No intenta acceder a bases de datos internas protegidas por macOS.
+- Esto es intencional para mantener la auditoría:
+  - Segura
+  - No intrusiva
+  - Apta para uso corporativo
+
 ---
 
 ## Cómo usar el script
