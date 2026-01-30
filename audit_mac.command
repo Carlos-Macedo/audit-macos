@@ -134,14 +134,33 @@ COUNT_KEY=$(find "$HOME" -type f -name "*.key" 2>/dev/null | wc -l | tr -d ' ')
 COUNT_PEM=$(find "$HOME" -type f -name "*.pem" 2>/dev/null | wc -l | tr -d ' ')
 COUNT_PDF=$(find "$HOME" -type f -name "*.pdf" 2>/dev/null | wc -l | tr -d ' ')
 COUNT_DMG=$(find "$HOME" -type f -name "*.dmg" 2>/dev/null | wc -l | tr -d ' ')
+COUNT_MKV=$(find "$HOME" -type f -name "*.mkv" 2>/dev/null | wc -l | tr -d ' ')
+COUNT_MP4=$(find "$HOME" -type f -name "*.mp4" 2>/dev/null | wc -l | tr -d ' ')
+COUNT_WEBM=$(find "$HOME" -type f -name "*.webm" 2>/dev/null | wc -l | tr -d ' ')
+COUNT_PNG=$(find "$HOME" -type f -name "*.png" 2>/dev/null | wc -l | tr -d ' ')
+COUNT_JPG=$(find "$HOME" -type f \( -name "*.jpg" -o -name "*.jpeg" \) 2>/dev/null | wc -l | tr -d ' ')
 
-TOTAL_SENSIBLES=$((COUNT_PFX + COUNT_KEY + COUNT_PEM + COUNT_PDF + COUNT_DMG))
+
+TOTAL_SENSIBLES=$(( \
+  COUNT_PFX + COUNT_KEY + COUNT_PEM + COUNT_PDF + COUNT_DMG + \
+  COUNT_MKV + COUNT_MP4 + COUNT_WEBM + COUNT_PNG + COUNT_JPG \
+))
+
 
 DETALLE_GENERAL=$(find "$HOME" -type f \
   \( -name "*.pfx" -o -name "*.key" -o -name "*.pem" -o -name "*.dmg" \) \
   2>/dev/null | head -20)
 
 DETALLE_PDF=$(find "$HOME" -type f -name "*.pdf" 2>/dev/null | head -20)
+
+DETALLE_MEDIA=$(find "$HOME" -type f \
+  \( -name "*.mkv" -o -name "*.mp4" -o -name "*.webm" \) \
+  2>/dev/null | head -15)
+
+DETALLE_IMAGENES=$(find "$HOME" -type f \
+  \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) \
+  2>/dev/null | head -15)
+
 
 # ==================================================
 # Velocidad de Internet
@@ -234,18 +253,32 @@ $(echo "$CERT_PUBLICOS" | sed 's/^/      "/;s/$/",/' | sed '$ s/,$//')
   "archivos_sensibles": {
     "total": $TOTAL_SENSIBLES,
     "por_tipo": {
-      "pfx": $COUNT_PFX,
-      "key": $COUNT_KEY,
-      "pem": $COUNT_PEM,
-      "pdf": $COUNT_PDF,
-      "dmg": $COUNT_DMG
+      "pfx"  : $COUNT_PFX,
+      "key"  : $COUNT_KEY,
+      "pem"  : $COUNT_PEM,
+      "pdf"  : $COUNT_PDF,
+      "dmg"  : $COUNT_DMG,
+      "mkv"  : $COUNT_MKV,
+      "mp4"  : $COUNT_MP4,
+      "webm" : $COUNT_WEBM,
+      "png"  : $COUNT_PNG,
+      "jpg"  : $COUNT_JPG
+))
+
+
     },
     "ejemplos": {
       "general": [
-$(echo "$DETALLE_GENERAL" | sed 's/^/        "/;s/$/",/' | sed '$ s/,$//')
+        $(echo "$DETALLE_GENERAL" | sed 's/^/        "/;s/$/",/' | sed '$ s/,$//')
       ],
       "pdf": [
-$(echo "$DETALLE_PDF" | sed 's/^/        "/;s/$/",/' | sed '$ s/,$//')
+        $(echo "$DETALLE_PDF" | sed 's/^/        "/;s/$/",/' | sed '$ s/,$//')
+      ],
+      "Media": [
+        $(echo "$DETALLE_MEDIA" | sed 's/^/        "/;s/$/",/' | sed '$ s/,$//')
+      ],
+      "imagenes": [
+        $(echo "$DETALLE_IMAGENES" | sed 's/^/        "/;s/$/",/' | sed '$ s/,$//')
       ]
     }
   }
@@ -320,11 +353,16 @@ ARCHIVOS SENSIBLES
 Total encontrados : $TOTAL_SENSIBLES
 
 Por tipo:
-- PFX : $COUNT_PFX
-- KEY : $COUNT_KEY
-- PEM : $COUNT_PEM
-- PDF : $COUNT_PDF
-- DMG : $COUNT_DMG
+- PFX  : $COUNT_PFX
+- KEY  : $COUNT_KEY
+- PEM  : $COUNT_PEM
+- PDF  : $COUNT_PDF
+- DMG  : $COUNT_DMG
+- MKV  : $COUNT_MKV,
+- MP4  : $COUNT_MP4,
+- WEBM : $COUNT_WEBM,
+- PNG  : $COUNT_PNG,
+- JPG  : $COUNT_JPG
 
 ----------------------------------------
 VELOCIDAD DE INTERNET
