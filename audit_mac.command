@@ -36,22 +36,41 @@ SERIAL_NUMBER=$(system_profiler SPHardwareDataType | awk -F": " '/Serial Number/
 # ==================================================
 # Seguridad
 # ==================================================
-ASK_PASSWORD=$(defaults read com.apple.screensaver askForPassword 2>/dev/null || echo 0)
-ASK_DELAY=$(defaults read com.apple.screensaver askForPasswordDelay 2>/dev/null || echo 0)
+#
+#
+# ==================================================
+# Bloqueo de pantalla (inteligente por arquitectura)
+# ==================================================
 
+ARCH=$(uname -m)
 SCREEN_LOCK_ENABLED=false
-SCREEN_LOCK_GRACE=$ASK_DELAY
+SCREEN_LOCK_INFO=""
+SCREEN_LOCK_DELAY=""
 
-if [ "$ASK_PASSWORD" == "1" ]; then
-  SCREEN_LOCK_ENABLED=true
-else
-  # Fallback legacy (Intel / macOS antiguos)
+if [ "$ARCH" = "x86_64" ]; then
+  # Intel (macOS antiguos / Ventura / Monterey)
   SCREEN_LOCK_DELAY=$(defaults -currentHost read com.apple.screensaver idleTime 2>/dev/null || echo 0)
+
   if [ "$SCREEN_LOCK_DELAY" -gt 0 ]; then
     SCREEN_LOCK_ENABLED=true
-    SCREEN_LOCK_GRACE=$SCREEN_LOCK_DELAY
+    SCREEN_LOCK_INFO="activado (${SCREEN_LOCK_DELAY}s)"
+  else
+    SCREEN_LOCK_ENABLED=false
+    SCREEN_LOCK_INFO="desactivado"
+  fi
+
+else
+  # Apple Silicon (Sonoma / Tahoe)
+  ASK_PASSWORD=$(defaults read com.apple.screensaver askForPassword 2>/dev/null || echo "")
+
+  if [ "$ASK_PASSWORD" = "1" ]; then
+    SCREEN_LOCK_ENABLED=true
+    SCREEN_LOCK_INFO="configurado (verificación limitada por macOS)"
+  else
+    SCREEN_LOCK_INFO="no verificable automáticamente (restricción macOS)"
   fi
 fi
+
 
 
 SCREEN_TIME_RAW=$(defaults read /Library/Preferences/com.apple.ScreenTime.plist ScreenTimeEnabled 2>/dev/null || echo 0)
@@ -183,6 +202,7 @@ $(echo "$USUARIOS" | sed 's/^/    "/;s/$/",/' | sed '$ s/,$//')
   "seguridad": {
     "bloqueo_pantalla": {
       "activado": $SCREEN_LOCK_ENABLED,
+      "detalle": $SCREEN_LOCK_INFO,
       "tiempo_segundos": $SCREEN_LOCK_DELAY
     },
     "firewall_activado": $FIREWALL_ENABLED,
@@ -271,6 +291,7 @@ Número de serie   : $SERIAL_NUMBER
 SEGURIDAD
 ----------------------------------------
 Bloqueo pantalla  : $( [ "$SCREEN_LOCK_ENABLED" = true ] && echo "Activado ($SCREEN_LOCK_DELAY segundos)" || echo "Desactivado" )
+Detalle           : $SCREEN_LOCK_INFO,
 Firewall          : $( [ "$FIREWALL_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
 Tiempo de uso     : No verificable automáticamente, macOS restringe el acceso a esta información
 
