@@ -28,11 +28,12 @@ El script realiza una auditoría **solo en el equipo local** y obtiene:
 - Modelo del equipo
 - Tipo de disco
 - Uso de disco
+- Número de serie
 
 ### Seguridad
 - Estado del bloqueo de pantalla y tiempo configurado
 - Estado del firewall
-- Estado del tiempo de uso de pantalla
+- Estado del tiempo de uso de pantalla (No permitido por el sistema operativo)
 
 ### Actividad
 - Tiempo de inactividad

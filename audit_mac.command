@@ -39,15 +39,26 @@ SERIAL_NUMBER=$(system_profiler SPHardwareDataType | awk -F": " '/Serial Number/
 SCREEN_LOCK_DELAY=$(defaults -currentHost read com.apple.screensaver idleTime 2>/dev/null || echo 0)
 [ "$SCREEN_LOCK_DELAY" -gt 0 ] && SCREEN_LOCK_ENABLED=true || SCREEN_LOCK_ENABLED=false
 
-FIREWALL_RAW=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)
-if echo "$FIREWALL_RAW" | grep -q "enabled"; then
-  FIREWALL_ENABLED=true
-else
-  FIREWALL_ENABLED=false
-fi
-
 SCREEN_TIME_RAW=$(defaults read /Library/Preferences/com.apple.ScreenTime.plist ScreenTimeEnabled 2>/dev/null || echo 0)
 [ "$SCREEN_TIME_RAW" == "1" ] && SCREEN_TIME_ENABLED=true || SCREEN_TIME_ENABLED=false
+
+# ==================================================
+# Firewall (compatible con macOS antiguos y modernos)
+# ==================================================
+
+FIREWALL_ENABLED=false
+
+# Método moderno (Sonoma / Tahoe)
+if /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null | grep -qi "enabled"; then
+  FIREWALL_ENABLED=true
+else
+  # Fallback para macOS antiguos (Ventura y anteriores)
+  FIREWALL_STATE=$(defaults read /Library/Preferences/com.apple.alf globalstate 2>/dev/null || echo 0)
+  if [[ "$FIREWALL_STATE" == "1" || "$FIREWALL_STATE" == "2" ]]; then
+    FIREWALL_ENABLED=true
+  fi
+fi
+
 
 # ==================================================
 # Actividad (datos legibles)
