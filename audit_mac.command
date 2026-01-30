@@ -36,8 +36,23 @@ SERIAL_NUMBER=$(system_profiler SPHardwareDataType | awk -F": " '/Serial Number/
 # ==================================================
 # Seguridad
 # ==================================================
-SCREEN_LOCK_DELAY=$(defaults -currentHost read com.apple.screensaver idleTime 2>/dev/null || echo 0)
-[ "$SCREEN_LOCK_DELAY" -gt 0 ] && SCREEN_LOCK_ENABLED=true || SCREEN_LOCK_ENABLED=false
+ASK_PASSWORD=$(defaults read com.apple.screensaver askForPassword 2>/dev/null || echo 0)
+ASK_DELAY=$(defaults read com.apple.screensaver askForPasswordDelay 2>/dev/null || echo 0)
+
+SCREEN_LOCK_ENABLED=false
+SCREEN_LOCK_GRACE=$ASK_DELAY
+
+if [ "$ASK_PASSWORD" == "1" ]; then
+  SCREEN_LOCK_ENABLED=true
+else
+  # Fallback legacy (Intel / macOS antiguos)
+  SCREEN_LOCK_DELAY=$(defaults -currentHost read com.apple.screensaver idleTime 2>/dev/null || echo 0)
+  if [ "$SCREEN_LOCK_DELAY" -gt 0 ]; then
+    SCREEN_LOCK_ENABLED=true
+    SCREEN_LOCK_GRACE=$SCREEN_LOCK_DELAY
+  fi
+fi
+
 
 SCREEN_TIME_RAW=$(defaults read /Library/Preferences/com.apple.ScreenTime.plist ScreenTimeEnabled 2>/dev/null || echo 0)
 [ "$SCREEN_TIME_RAW" == "1" ] && SCREEN_TIME_ENABLED=true || SCREEN_TIME_ENABLED=false
