@@ -71,15 +71,7 @@ else
   fi
 fi
 
-
-
-SCREEN_TIME_RAW=$(defaults read /Library/Preferences/com.apple.ScreenTime.plist ScreenTimeEnabled 2>/dev/null || echo 0)
-[ "$SCREEN_TIME_RAW" == "1" ] && SCREEN_TIME_ENABLED=true || SCREEN_TIME_ENABLED=false
-
-
-# ==================================================
-# Seguridad avanzada
-# ==================================================
+# AVANZADA
 # Estado de FileVault (cifrado de disco)
 FILEVAULT_RAW=$(fdesetup status 2>/dev/null)
 
@@ -259,8 +251,7 @@ $(echo "$USUARIOS" | sed 's/^/    "/;s/$/",/' | sed '$ s/,$//')
   "seguridad": {
     "bloqueo_pantalla": {
       "activado": $SCREEN_LOCK_ENABLED,
-      "detalle": $SCREEN_LOCK_INFO,
-      "tiempo_segundos": $SCREEN_LOCK_DELAY
+      "tiempo_segundos": $SCREEN_LOCK_INFO
     },
     "firewall_activado": $FIREWALL_ENABLED,
     "tiempo_uso_pantalla_activado": "estado": "no verificable automáticamente (restricción macOS)"
@@ -373,7 +364,7 @@ Número de serie   : $SERIAL_NUMBER
 ----------------------------------------
 SEGURIDAD
 ----------------------------------------
-Bloqueo pantalla  : $( [ "$SCREEN_LOCK_ENABLED" = true ] && echo "Activado ($SCREEN_LOCK_DELAY segundos)" || echo "Desactivado" )
+Bloqueo pantalla  : $( [ "$SCREEN_LOCK_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
 Detalle           : $SCREEN_LOCK_INFO,
 Firewall          : $( [ "$FIREWALL_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
 Tiempo de uso     : No verificable automáticamente, macOS restringe el acceso a esta información
