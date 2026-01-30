@@ -90,7 +90,9 @@ Al ejecutarse, el script genera en la misma carpeta:
 - `audit_<NOMBRE_EQUIPO>.json`
 - `audit_<NOMBRE_EQUIPO>.txt`
 
-### Abrir la terminal y entrar a la carpeta del proyecto
+## Jalar cambios nuevos al script
+
+### Abrir la terminal del SO y entrar a la carpeta del proyecto
 ```bash
 cd audit-macos
 ```

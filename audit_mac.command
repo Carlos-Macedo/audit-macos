@@ -31,6 +31,7 @@ RAM_GB=$(($(sysctl -n hw.memsize) / 1024 / 1024 / 1024))
 MODELO=$(system_profiler SPHardwareDataType | awk -F": " '/Model Identifier/ {print $2}')
 TIPO_DISCO=$(system_profiler SPStorageDataType | awk -F": " '/Physical Drive/ {getline; print $2; exit}')
 USO_DISCO=$(df -H / | tail -1)
+SERIAL_NUMBER=$(system_profiler SPHardwareDataType | awk -F": " '/Serial Number/ {print $2}')
 
 # ==================================================
 # Seguridad
@@ -145,7 +146,8 @@ $(echo "$USUARIOS" | sed 's/^/    "/;s/$/",/' | sed '$ s/,$//')
     "ram_gb": $RAM_GB,
     "modelo": "$MODELO",
     "tipo_disco": "$TIPO_DISCO",
-    "uso_disco": "$USO_DISCO"
+    "uso_disco": "$USO_DISCO",
+    "numero_serie": "$SERIAL_NUMBER"
   },
 
   "seguridad": {
@@ -154,7 +156,7 @@ $(echo "$USUARIOS" | sed 's/^/    "/;s/$/",/' | sed '$ s/,$//')
       "tiempo_segundos": $SCREEN_LOCK_DELAY
     },
     "firewall_activado": $FIREWALL_ENABLED,
-    "tiempo_uso_pantalla_activado": $SCREEN_TIME_ENABLED
+    "tiempo_uso_pantalla_activado": "estado": "no verificable automáticamente (restricción macOS)"
   },
 
   "actividad": {
@@ -233,13 +235,14 @@ Memoria RAM       : ${RAM_GB} GB
 Modelo            : $MODELO
 Disco             : $TIPO_DISCO
 Uso de disco      : $USO_DISCO
+Número de serie   : $SERIAL_NUMBER
 
 ----------------------------------------
 SEGURIDAD
 ----------------------------------------
 Bloqueo pantalla  : $( [ "$SCREEN_LOCK_ENABLED" = true ] && echo "Activado ($SCREEN_LOCK_DELAY segundos)" || echo "Desactivado" )
 Firewall          : $( [ "$FIREWALL_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
-Tiempo de uso     : $( [ "$SCREEN_TIME_ENABLED" = true ] && echo "Activado" || echo "Desactivado" )
+Tiempo de uso     : No verificable automáticamente, macOS restringe el acceso a esta información
 
 ----------------------------------------
 ACTIVIDAD
